@@ -12,7 +12,7 @@ export default function Home() {
 
   return (
     <div>
-      <PageView event="home_view" />
+      <PageView event="home_viewed" />
 
       <section className="bg-white">
         <div className="mx-auto flex w-full max-w-5xl flex-col items-start gap-5 px-4 py-20">
@@ -27,7 +27,7 @@ export default function Home() {
             $60 — and buy any three pieces to unlock the bundle discount.
           </p>
           <div className="flex gap-3">
-            <TrackedCta href="/shop" event="hero_shop_click" placement="hero">
+            <TrackedCta href="/shop" event="shop_collection_cta_clicked" placement="hero">
               Shop the collection
             </TrackedCta>
             <TrackedCta href="/cart" event="hero_cart_click" placement="hero" variant="light">
