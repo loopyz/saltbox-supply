@@ -28,6 +28,10 @@ export interface PricedCart {
   totalCents: number;
   /** Cents still needed to unlock free shipping; 0 when already unlocked. */
   freeShippingGapCents: number;
+  /** Items still needed to reach the bundle minimum; 0 once the discount applies. */
+  bundleItemsRemaining?: number;
+  /** Discount the current lines would earn if the bundle minimum were met. */
+  bundleSavingsPreviewCents?: number;
 }
 
 /**
@@ -70,5 +74,7 @@ export function priceCart(lines: CartLine[]): PricedCart {
     shippingCents,
     totalCents: discounted + shippingCents,
     freeShippingGapCents: Math.max(0, FREE_SHIPPING_THRESHOLD_CENTS - discounted),
+    bundleItemsRemaining: Math.max(0, BUNDLE_MIN_ITEMS - itemCount),
+    bundleSavingsPreviewCents: Math.round((subtotalCents * BUNDLE_DISCOUNT_PCT) / 100),
   };
 }
