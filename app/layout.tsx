@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTrevoBootstrap } from "@trevosdk/nextjs";
 import { TrevoProvider } from "@trevosdk/react";
+import TrackedCta from "@/components/tracked-cta";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -31,12 +32,14 @@ export default async function RootLayout({
                 <Link href="/shop" className="hover:text-stone-900">Shop</Link>
                 <Link href="/cart" className="hover:text-stone-900">Cart</Link>
               </nav>
-              <Link
+              <TrackedCta
                 href="/shop"
+                event="shop_collection_cta_clicked"
+                placement="header"
                 className="ml-auto rounded-full bg-amber-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-amber-800"
               >
                 Shop the collection
-              </Link>
+              </TrackedCta>
             </div>
           </header>
           <main className="flex-1">{children}</main>

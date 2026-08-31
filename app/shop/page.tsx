@@ -9,7 +9,7 @@ function dollars(cents: number): string {
 export default function Shop() {
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-12">
-      <PageView event="shop_view" />
+      <PageView event="shop_viewed" />
       <h1 className="mb-1 text-2xl font-semibold tracking-tight">The collection</h1>
       <p className="mb-8 text-sm text-stone-600">
         Buy any three pieces for 10% off the lot. Free shipping over $60.
