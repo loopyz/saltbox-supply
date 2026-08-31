@@ -3,12 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { defineExperiment, useExperiment, useTrevo } from "@trevosdk/react";
-import CartViewVariant from "@/components/cart-view-variant";
+import { useTrevo } from "@trevosdk/react";
 
 const BUNDLE_PROGRESS_KEY = "show-bundle-discount-progress-in-the-cart-priced-by-the-server";
-
-const BUNDLE_PROGRESS_EXPERIMENT = defineExperiment(BUNDLE_PROGRESS_KEY, ["control", "variant"]);
 
 interface PricedLine {
   slug: string;
@@ -26,6 +23,8 @@ interface PricedCart {
   shippingCents: number;
   totalCents: number;
   freeShippingGapCents: number;
+  bundleItemsRemaining?: number;
+  bundleSavingsPreviewCents?: number;
 }
 
 const STORAGE_KEY = "sb_cart";
@@ -49,9 +48,10 @@ function dollars(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-// The cart holds only slugs and quantities; every price on screen comes back
-// from the server, which owns the discount and shipping rules.
-function CartViewControl() {
+// Treatment arm of the bundle-progress experiment: identical to the control
+// cart, plus a server-priced nudge under the free-shipping banner telling the
+// shopper what a third piece is worth. The variant is resolved by CartView.
+export default function CartViewVariant() {
   const trevo = useTrevo();
   const searchParams = useSearchParams();
   const [items, setItems] = useState<Record<string, number> | null>(null);
@@ -154,6 +154,9 @@ function CartViewControl() {
     );
   }
 
+  const bundleItemsRemaining = cart.bundleItemsRemaining;
+  const bundleSavingsPreviewCents = cart.bundleSavingsPreviewCents;
+
   return (
     <div className="flex flex-col gap-4">
       {cart.freeShippingGapCents > 0 ? (
@@ -165,6 +168,19 @@ function CartViewControl() {
           Free shipping unlocked.
         </p>
       )}
+
+      {bundleItemsRemaining !== undefined &&
+        bundleSavingsPreviewCents !== undefined &&
+        (bundleItemsRemaining > 0 ? (
+          <p className="rounded-lg bg-amber-50 px-4 py-2.5 text-sm text-amber-900">
+            Add {bundleItemsRemaining} more {bundleItemsRemaining === 1 ? "piece" : "pieces"} for
+            10% off the lot — you&apos;d save {dollars(bundleSavingsPreviewCents)}.
+          </p>
+        ) : (
+          <p className="rounded-lg bg-emerald-50 px-4 py-2.5 text-sm text-emerald-900">
+            Bundle discount unlocked.
+          </p>
+        ))}
 
       <div className="flex flex-col divide-y divide-stone-100 rounded-xl border border-stone-200 bg-white">
         {cart.lines.map((line) => (
@@ -237,12 +253,4 @@ function CartViewControl() {
       </button>
     </div>
   );
-}
-
-// Resolves the bundle-progress variant where the cart renders — resolving is
-// what records the exposure, so it must happen here and not on checkout.
-export default function CartView() {
-  const variant = useExperiment(BUNDLE_PROGRESS_EXPERIMENT);
-  if (variant === "control") return <CartViewControl />;
-  return <CartViewVariant />;
 }
