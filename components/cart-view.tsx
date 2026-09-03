@@ -132,7 +132,13 @@ function CartViewControl() {
         <p className="text-sm text-stone-600">
           This is a demo checkout — nothing ships, but the conversion was recorded.
         </p>
-        <Link href="/shop" className="text-sm font-medium text-amber-700 hover:underline">
+        <Link
+          href="/shop"
+          className="text-sm font-medium text-amber-700 hover:underline"
+          onClick={() =>
+            trevo?.track("keep_browsing_clicked", { placement: "order_confirmation", orderId })
+          }
+        >
           Keep browsing →
         </Link>
       </div>
